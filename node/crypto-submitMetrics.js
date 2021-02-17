@@ -27,7 +27,7 @@ function submitDDData(crypto){
             REDIS_CLIENT.quit();
             throw err;
              } 
-             dogStatsd.gauge(crypto + '.price.'+base, reply);
+             dogStatsd.histogram('crypto.' +crypto+'.price.'+base,reply);
             LOGGER.info('Submitted metric for: ' + crypto + ' with a value of: ' + reply)
             REDIS_CLIENT.quit();
              

@@ -1,9 +1,13 @@
 var StatsD = require('hot-shots');
-var DD_AGENT_HOST = '192.168.0.230' //env
+
+var HOST = process.env.HOST
+if (HOST == null ){
+  HOST  = 'localhost'
+}
 
 const dogStatsd = new StatsD({
     port: 8125,
-    host: DD_AGENT_HOST,
+    host: HOST,
 
 });
 

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-crypto
+  labels:
+    app: node-crypto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-crypto
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/node-crypto.logs: '[{"source":"node-crypto","service":"node-crypto"}]'
+      labels:
+        app: node-crypto
+    spec:
+      containers:
+      - name: node-crypto
+        image: localhost:32000/node-crypto:latest
+        env:
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+
+          - name: REDIS_PORT
+            value: '30010'
+
+          - name: HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+
+          - name: DD_TAGS
+            value: "service:node-crypto"
+
+          - name: COINS
+            value: "BTC,ETH,LTC"
+
+          - name: METRIC_SUBMISSION_INTERVAL
+            value: '10000'
+
+          - name: VALUE_COLLECTION_INTERVAL
+            value: '60000'
