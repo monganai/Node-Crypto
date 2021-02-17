@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-crypto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-crypto
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/redis-crypto.check_names: '["redisdb"]'
+        ad.datadoghq.com/redis-crypto.init_configs: '[{}]'
+        ad.datadoghq.com/redis-crypto.instances: '[{"host": "%%host%%","port":"%%port%%"}]'
+        ad.datadoghq.com/redis-crypto.logs: '[{"source":"redis","service":"crypto"}]'
+      labels:
+        app: redis-crypto
+    spec:
+      containers:
+        - name: redis-crypto
+          image: redis:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6379
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-crypto
+spec:
+  selector:
+    app: redis-crypto
+  ports:
+    - port: 6379
+      nodePort: 30010
+  type: LoadBalancer
