@@ -4,6 +4,7 @@ metadata:
   name: node-crypto
   labels:
     app: node-crypto
+    project: crypto
 spec:
   replicas: 1
   selector:
@@ -19,6 +20,8 @@ spec:
       containers:
       - name: node-crypto
         image: localhost:32000/node-crypto:latest
+        ports:
+            - containerPort: 8888
         env:
           - name: DD_AGENT_HOST
             valueFrom:
@@ -36,11 +39,30 @@ spec:
           - name: DD_TAGS
             value: "service:node-crypto"
 
+          - name: CURRENCY
+            value: "EUR"
+
           - name: COINS
-            value: "BTC,ETH,LTC"
+            value: "BTC,ETH,LTC,XRP,XLM,DOGE,XTZ,BCH,EOS,OMG,ZRX"
 
           - name: METRIC_SUBMISSION_INTERVAL
             value: '10000'
 
           - name: VALUE_COLLECTION_INTERVAL
             value: '60000'
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-crypto
+spec:
+  selector:
+    app: node-crypto
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8888
+      nodePort: 30011
+  type: LoadBalancer
