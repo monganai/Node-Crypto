@@ -5,8 +5,6 @@ const TRACER = require('dd-trace').init({
     debug: false
 });
 
-
-
 module.exports = {
 TRACER:TRACER,
 }

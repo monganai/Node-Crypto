@@ -1,7 +1,10 @@
+
+//const tracer = require('./tracer')
+//const TRACER = tracer.TRACER
 const logger = require('./logger');
 const LOGGER = logger.LOGGER
-const redis = require('./crypto-redis');
-const REDIS_CLIENT = redis.REDIS_CLIENT
+const pg = require('./pg_init.js');
+const PGCLIENT = pg.PGCLIENT
 const { Worker } = require('worker_threads')
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -10,7 +13,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-var demoCoins = "BTC"
+
+var demoCoins = "BTC,ETH"
 var COINS
 var currency
 
@@ -51,7 +55,7 @@ function runGetPriceService(workerData, coin, currency) {
 }
 
 
-function runSendMetricService(workerData, coin) {
+function runSendMetricService(workerData, coin, currency) {
     return new Promise((resolve, reject) => {
       const worker = new Worker('./crypto-submitMetrics.js', { workerData: {thisCoin: coin, thisCurrency: currency} });
       worker.on('message', resolve);
@@ -63,7 +67,6 @@ function runSendMetricService(workerData, coin) {
     })
   }
 
-
 async function runGetPrice(coin,currency) {
   const result = await runGetPriceService(coin, coin, currency, currency)
   await new Promise(resolve => setTimeout(resolve, value_collection_interval));
@@ -71,12 +74,31 @@ async function runGetPrice(coin,currency) {
 
 }
 
-async function runSendMetric(coin) {
+async function runSendMetric(coin, currency) {
     const result = await runSendMetricService(coin, coin, currency, currency)
     await new Promise(resolve => setTimeout(resolve, metric_sumbission_interval));
     runSendMetric(coin,currency).catch(err => LOGGER.info(err))
     
   }
+
+
+LOGGER.info('Initilizing Database')
+
+PGCLIENT.connect();
+
+// creation of crypto tables:
+for (let item of COINS) {
+
+  PGCLIENT.query('CREATE TABLE '+item+' (curr_value varchar,currency varchar,timestamp timestamp)', (err, res) => {
+    if (err) {
+       LOGGER.info(err);
+      return;
+             }
+      LOGGER.info(res);
+            }); 
+          }
+
+LOGGER.info('Starting Background processes');
 
 for (let item of COINS) {
   runGetPrice(item,currency).catch(err => LOGGER.info(err))
@@ -84,8 +106,7 @@ for (let item of COINS) {
   
 }
 
-LOGGER.info('Started Background processes');
-
+// express server for webooks
 router.post('/',(request,response) => {
     LOGGER.info(request.body);
     LOGGER.info('Crypto metric to watch: ' + request.body.crypto_metric)
@@ -96,3 +117,5 @@ app.use("/", router);
 app.listen(8888,() => {
     LOGGER.info("Started listening on PORT 8888");
   })
+
+

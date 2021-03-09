@@ -5,6 +5,9 @@ metadata:
   labels:
     app: node-crypto
     project: crypto
+    tags.datadoghq.com/service: "node-crypto"
+    tags.datadoghq.com/version: "1.0"
+
 spec:
   replicas: 1
   selector:
@@ -16,6 +19,9 @@ spec:
         ad.datadoghq.com/node-crypto.logs: '[{"source":"node-crypto","service":"node-crypto"}]'
       labels:
         app: node-crypto
+        tags.datadoghq.com/service: "node-crypto"
+        tags.datadoghq.com/version: "1.0"
+
     spec:
       containers:
       - name: node-crypto

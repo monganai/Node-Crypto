@@ -4,6 +4,7 @@ const dsd = require('./statsd')
 const dogStatsd = dsd.dogStatsd
 const redis = require('./crypto-redis');
 const REDIS_CLIENT = redis.REDIS_CLIENT
+
 const { workerData, parentPort } = require('worker_threads')
 
 var base = workerData.thisCurrency

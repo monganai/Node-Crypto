@@ -4,6 +4,7 @@ metadata:
   name: redis-crypto
   labels:
     project: crypto
+    tags.datadoghq.com/service: "redis-crypto"
 spec:
   replicas: 1
   selector:
@@ -15,9 +16,10 @@ spec:
         ad.datadoghq.com/redis-crypto.check_names: '["redisdb"]'
         ad.datadoghq.com/redis-crypto.init_configs: '[{}]'
         ad.datadoghq.com/redis-crypto.instances: '[{"host": "%%host%%","port":"%%port%%"}]'
-        ad.datadoghq.com/redis-crypto.logs: '[{"source":"redis","service":"crypto"}]'
+        ad.datadoghq.com/redis-crypto.logs: '[{"source":"redis","service":"redis-crypto"}]'
       labels:
         app: redis-crypto
+        tags.datadoghq.com/service: "redis-crypto"
     spec:
       containers:
         - name: redis-crypto
