@@ -52,10 +52,13 @@ spec:
             value: "BTC,ETH,LTC,XRP,XLM,DOGE,XTZ,BCH,EOS,OMG,ZRX"
 
           - name: METRIC_SUBMISSION_INTERVAL
-            value: '10000'
+            value: '10'
 
           - name: VALUE_COLLECTION_INTERVAL
-            value: '60000'
+            value: '60'
+
+          - name: STATS_INTERVAL
+            value: '43200'
 
 
 ---

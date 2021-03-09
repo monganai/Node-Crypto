@@ -43,7 +43,7 @@ function getCryptoPrice(base, crypto, value) {
                console.log(err)
               return;
                      }
-              LOGGER.info(res);
+              //LOGGER.info(res);
                PGCLIENT.end();
                     }); 
             });
