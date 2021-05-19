@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discord-crypto
+  labels:
+    app: discord-crypto
+    project: crypto
+    tags.datadoghq.com/service: "discord-crypto"
+    tags.datadoghq.com/version: "1.0"
+    tags.datadoghq.com/env: "crypto"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discord-crypto
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/node-crypto.logs: '[{"source":"node-crypto","service":"node-crypto"}]'
+      labels:
+        app: discord-crypto
+        tags.datadoghq.com/service: "discord-crypto"
+        tags.datadoghq.com/version: "1.0"
+        tags.datadoghq.com/env: "crypto"
+
+    spec:
+      containers:
+      - name: discord-crypto
+        image: localhost:32000/discord-crypto:discord
+        imagePullPolicy: Always
+
+        ports:
+            - containerPort: 8888
+        env:
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+
+          - name: REDIS_PORT
+            value: '30010'
+
+          - name: HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+
+          - name: DD_TAGS
+            value: "service:discord-crypto"
+
+          - name: CURRENCY
+            value: "EUR"
+
+          - name: COINS
+            value: "BTC,ETH,LTC,XRP,XLM,DOGE,XTZ,BCH,EOS,OMG,ZRX,PIVX"
+
+          - name: DD_ENV
+            value: 'crypto'
+
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discord-crypto
+spec:
+  selector:
+    app: discord-crypto
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8888
+      nodePort: 30011
+  type: LoadBalancer

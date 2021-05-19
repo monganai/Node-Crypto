@@ -7,6 +7,7 @@ metadata:
     project: crypto
     tags.datadoghq.com/service: "node-crypto"
     tags.datadoghq.com/version: "1.0"
+    tags.datadoghq.com/env: "crypto"
 
 spec:
   replicas: 1
@@ -21,13 +22,16 @@ spec:
         app: node-crypto
         tags.datadoghq.com/service: "node-crypto"
         tags.datadoghq.com/version: "1.0"
+        tags.datadoghq.com/env: "crypto"
 
     spec:
       containers:
       - name: node-crypto
-        image: localhost:32000/node-crypto:latest
-        ports:
-            - containerPort: 8888
+        image: localhost:32000/node-crypto:discord
+        imagePullPolicy: Always
+
+        #ports:
+            #- containerPort: 8888
         env:
           - name: DD_AGENT_HOST
             valueFrom:
@@ -49,16 +53,21 @@ spec:
             value: "EUR"
 
           - name: COINS
-            value: "BTC,ETH,LTC,XRP,XLM,DOGE,XTZ,BCH,EOS,OMG,ZRX"
+            value: "BTC,ETH,LTC,XRP,XLM,DOGE,XTZ,BCH,EOS,OMG,ZRX,PIVX"
 
           - name: METRIC_SUBMISSION_INTERVAL
-            value: '10'
+            value: '60'
 
           - name: VALUE_COLLECTION_INTERVAL
             value: '60'
 
           - name: STATS_INTERVAL
             value: '43200'
+
+          - name: DISCORD_URL
+            value: "https://discord.com/api/webhooks/843570821100601404/ZZzkcP4-9wGGgVJQTfptXz_-BhZVNYbdBC6ujvvaczHhTdjOv2JEoDq34-2CEXvnoI8h"
+          - name: DD_ENV
+            value: 'crypto'
 
 
 ---
@@ -73,5 +82,5 @@ spec:
     - name: http
       protocol: TCP
       port: 8888
-      nodePort: 30011
+      nodePort: 30022 # was 11 
   type: LoadBalancer
